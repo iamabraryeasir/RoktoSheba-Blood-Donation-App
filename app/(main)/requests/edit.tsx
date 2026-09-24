@@ -19,6 +19,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppDateTimePicker } from "@/components/ui/AppDateTimePicker";
 import { AppInput } from "@/components/ui/AppInput";
 import { BloodGroupSelector } from "@/components/ui/BloodGroupSelector";
+import { LocationDetector } from "@/components/ui/LocationDetector";
 import { LocationSelector } from "@/components/ui/LocationSelector";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -43,6 +44,10 @@ export default function EditRequestScreen() {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [coords, setCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const { data: request, isLoading: isFetchingRequest } = useRequestDetail(
     id as string,
@@ -89,6 +94,13 @@ export default function EditRequestScreen() {
         } catch {}
       }
 
+      if (request.latitude && request.longitude) {
+        setCoords({
+          latitude: request.latitude,
+          longitude: request.longitude,
+        });
+      }
+
       reset({
         patientName: request.patient_name,
         bloodGroup: request.blood_group,
@@ -118,24 +130,19 @@ export default function EditRequestScreen() {
     return (
       <SafeAreaView className="flex-1 bg-background dark:bg-background-dark items-center justify-center">
         <ActivityIndicator size="large" color="#DC2626" />
-        <Text className="font-inter text-body text-text-secondary dark:text-text-dark-secondary mt-3">
-          Loading request details...
-        </Text>
       </SafeAreaView>
     );
   }
 
-  if (!request || (user?.id && request.created_by !== user.id)) {
+  if (!request) {
     return (
-      <SafeAreaView className="flex-1 bg-background dark:bg-background-dark items-center justify-center p-6">
-        <View className="w-16 h-16 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mb-4">
-          <Feather name="shield" size={32} color="#DC2626" />
-        </View>
-        <Text className="font-inter-bold text-h2 text-text-primary dark:text-text-dark-primary mb-2 text-center">
-          Unauthorized
+      <SafeAreaView className="flex-1 bg-background dark:bg-background-dark items-center justify-center px-4">
+        <Feather name="alert-circle" size={48} color="#EF4444" />
+        <Text className="text-text-primary dark:text-text-dark-primary font-inter-bold text-h3 mt-4 mb-2">
+          Request Not Found
         </Text>
-        <Text className="font-inter text-body text-text-secondary dark:text-text-dark-secondary text-center mb-6">
-          Only the creator of this blood request can make updates.
+        <Text className="text-text-secondary dark:text-text-dark-secondary font-inter text-body text-center mb-6">
+          The requested emergency blood post could not be loaded.
         </Text>
         <AppButton title="Go Back" onPress={() => router.back()} />
       </SafeAreaView>
@@ -196,12 +203,14 @@ export default function EditRequestScreen() {
           urgency: data.urgency,
           contact_number: data.contactNumber.trim(),
           document_image_url: documentUrl,
+          latitude: coords?.latitude ?? request.latitude,
+          longitude: coords?.longitude ?? request.longitude,
         },
       });
 
       showAppAlert(
-        "Request Updated",
-        "Your blood request details have been updated successfully.",
+        "Changes Saved",
+        "Your emergency blood request has been successfully updated.",
         "success",
         () => router.back(),
       );
@@ -235,7 +244,7 @@ export default function EditRequestScreen() {
               Edit Blood Request
             </Text>
             <Text className="font-inter text-caption text-text-secondary dark:text-text-dark-secondary">
-              Update request details and schedule
+              Update emergency details for donors
             </Text>
           </View>
         </View>
@@ -273,8 +282,8 @@ export default function EditRequestScreen() {
               name="patientName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <AppInput
-                  label="Patient Name *"
-                  placeholder="e.g. Mohammad Rahman"
+                  label="Patient Full Name *"
+                  placeholder="e.g. Rahim Uddin"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -339,6 +348,21 @@ export default function EditRequestScreen() {
               </Text>
             </View>
 
+            {/* GPS Location Auto-Detector */}
+            <LocationDetector
+              currentDivision={selectedDivision}
+              currentDistrict={selectedDistrict}
+              onLocationDetected={(detected) => {
+                setValue("division", detected.division);
+                setValue("district", detected.district);
+                setValue("area", detected.area);
+                setCoords({
+                  latitude: detected.latitude,
+                  longitude: detected.longitude,
+                });
+              }}
+            />
+
             <LocationSelector
               division={selectedDivision}
               district={selectedDistrict}
@@ -394,9 +418,7 @@ export default function EditRequestScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={errors.contactNumber?.message}
-                  leftIcon={
-                    <Feather name="phone-call" size={18} color="#9CA3AF" />
-                  }
+                  leftIcon={<Feather name="phone" size={18} color="#9CA3AF" />}
                 />
               )}
             />
@@ -407,7 +429,7 @@ export default function EditRequestScreen() {
             />
           </View>
 
-          {/* Submit Action */}
+          {/* Submit Action Button */}
           <AppButton
             title="Save Request Changes"
             onPress={handleSubmit(onSubmit)}

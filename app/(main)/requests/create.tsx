@@ -18,6 +18,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppDateTimePicker } from "@/components/ui/AppDateTimePicker";
 import { AppInput } from "@/components/ui/AppInput";
 import { BloodGroupSelector } from "@/components/ui/BloodGroupSelector";
+import { LocationDetector } from "@/components/ui/LocationDetector";
 import { LocationSelector } from "@/components/ui/LocationSelector";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -39,6 +40,10 @@ export default function CreateRequestScreen() {
   const { user, profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [coords, setCoords] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const defaultDate = new Date().toISOString().split("T")[0];
 
@@ -124,6 +129,8 @@ export default function CreateRequestScreen() {
         urgency: data.urgency,
         contact_number: data.contactNumber.trim(),
         document_image_url: documentUrl,
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
       });
 
       // 4. Invalidate TanStack Query requests cache
@@ -203,13 +210,12 @@ export default function CreateRequestScreen() {
               name="patientName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <AppInput
-                  label="Patient Name *"
-                  placeholder="e.g. Mohammad Rahman"
+                  label="Patient Full Name *"
+                  placeholder="e.g. Rahim Uddin"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={errors.patientName?.message}
-                  leftIcon={<Feather name="user" size={18} color="#9CA3AF" />}
                 />
               )}
             />
@@ -225,9 +231,6 @@ export default function CreateRequestScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={errors.hospitalName?.message}
-                  leftIcon={
-                    <Feather name="plus-square" size={18} color="#9CA3AF" />
-                  }
                 />
               )}
             />
@@ -268,6 +271,21 @@ export default function CreateRequestScreen() {
                 Location & Schedule
               </Text>
             </View>
+
+            {/* GPS Location Auto-Detector */}
+            <LocationDetector
+              currentDivision={selectedDivision}
+              currentDistrict={selectedDistrict}
+              onLocationDetected={(detected) => {
+                setValue("division", detected.division);
+                setValue("district", detected.district);
+                setValue("area", detected.area);
+                setCoords({
+                  latitude: detected.latitude,
+                  longitude: detected.longitude,
+                });
+              }}
+            />
 
             <LocationSelector
               division={selectedDivision}
@@ -324,9 +342,6 @@ export default function CreateRequestScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   error={errors.contactNumber?.message}
-                  leftIcon={
-                    <Feather name="phone-call" size={18} color="#9CA3AF" />
-                  }
                 />
               )}
             />
@@ -337,9 +352,9 @@ export default function CreateRequestScreen() {
             />
           </View>
 
-          {/* Submit Action */}
+          {/* Submit Action Button */}
           <AppButton
-            title="Publish Blood Request"
+            title="Publish Emergency Request"
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             className="mb-4"
