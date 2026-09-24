@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { AppButton } from "@/components/ui/AppButton";
-import { AppDatePicker } from "@/components/ui/AppDatePicker";
+import { AppDateTimePicker } from "@/components/ui/AppDateTimePicker";
 import { AppInput } from "@/components/ui/AppInput";
 import { BloodGroupSelector } from "@/components/ui/BloodGroupSelector";
 import { LocationSelector } from "@/components/ui/LocationSelector";
@@ -66,6 +66,7 @@ export default function EditRequestScreen() {
       district: "Dhaka",
       area: "Dhanmondi",
       neededDate: new Date().toISOString().split("T")[0],
+      neededTime: "12:00",
       urgency: "urgent",
       contactNumber: "+8801",
       documentImageUri: null,
@@ -75,9 +76,18 @@ export default function EditRequestScreen() {
   // Populate form with existing request data
   useEffect(() => {
     if (request) {
-      const formattedNeededDate = request.needed_date_time
-        ? new Date(request.needed_date_time).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0];
+      let formattedNeededDate = new Date().toISOString().split("T")[0];
+      let formattedNeededTime = "12:00";
+
+      if (request.needed_date_time) {
+        try {
+          const d = new Date(request.needed_date_time);
+          formattedNeededDate = d.toISOString().split("T")[0];
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+          formattedNeededTime = `${hh}:${mm}`;
+        } catch {}
+      }
 
       reset({
         patientName: request.patient_name,
@@ -87,6 +97,7 @@ export default function EditRequestScreen() {
         district: request.district,
         area: request.area,
         neededDate: formattedNeededDate,
+        neededTime: formattedNeededTime,
         urgency: request.urgency,
         contactNumber: request.contact_number,
         documentImageUri: request.document_image_url || null,
@@ -100,12 +111,14 @@ export default function EditRequestScreen() {
   const selectedDistrict = watch("district");
   const selectedArea = watch("area");
   const selectedDocumentUri = watch("documentImageUri");
+  const selectedNeededDate = watch("neededDate");
+  const selectedNeededTime = watch("neededTime");
 
   if (isFetchingRequest) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
+      <SafeAreaView className="flex-1 bg-background dark:bg-background-dark items-center justify-center">
         <ActivityIndicator size="large" color="#DC2626" />
-        <Text className="font-inter text-body text-text-secondary mt-3">
+        <Text className="font-inter text-body text-text-secondary dark:text-text-dark-secondary mt-3">
           Loading request details...
         </Text>
       </SafeAreaView>
@@ -114,14 +127,14 @@ export default function EditRequestScreen() {
 
   if (!request || (user?.id && request.created_by !== user.id)) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center p-6">
-        <View className="w-16 h-16 rounded-full bg-primary-surface items-center justify-center mb-4">
+      <SafeAreaView className="flex-1 bg-background dark:bg-background-dark items-center justify-center p-6">
+        <View className="w-16 h-16 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mb-4">
           <Feather name="shield" size={32} color="#DC2626" />
         </View>
-        <Text className="font-inter-bold text-h2 text-text-primary mb-2 text-center">
+        <Text className="font-inter-bold text-h2 text-text-primary dark:text-text-dark-primary mb-2 text-center">
           Unauthorized
         </Text>
-        <Text className="font-inter text-body text-text-secondary text-center mb-6">
+        <Text className="font-inter text-body text-text-secondary dark:text-text-dark-secondary text-center mb-6">
           Only the creator of this blood request can make updates.
         </Text>
         <AppButton title="Go Back" onPress={() => router.back()} />
@@ -156,6 +169,20 @@ export default function EditRequestScreen() {
         documentUrl = null;
       }
 
+      // Compute combined date and time ISO
+      let neededDateTimeIso: string;
+      try {
+        const [hh, mm] = (data.neededTime || "12:00").split(":");
+        const combined = new Date(
+          `${data.neededDate}T${hh.padStart(2, "0")}:${mm.padStart(2, "0")}:00`,
+        );
+        neededDateTimeIso = isNaN(combined.getTime())
+          ? new Date(data.neededDate).toISOString()
+          : combined.toISOString();
+      } catch {
+        neededDateTimeIso = new Date(data.neededDate).toISOString();
+      }
+
       await updateRequestMutation.mutateAsync({
         id: request.id,
         input: {
@@ -165,7 +192,7 @@ export default function EditRequestScreen() {
           division: data.division,
           district: data.district,
           area: data.area,
-          needed_date_time: new Date(data.neededDate).toISOString(),
+          needed_date_time: neededDateTimeIso,
           urgency: data.urgency,
           contact_number: data.contactNumber.trim(),
           document_image_url: documentUrl,
@@ -181,7 +208,7 @@ export default function EditRequestScreen() {
     } catch (err: any) {
       console.error("Update request error:", err);
       setFormError(
-        err?.message || "Failed to update request. Please try again.",
+        err?.message || "Failed to update blood request. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -189,49 +216,54 @@ export default function EditRequestScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
       >
         {/* Top Header */}
-        <View className="flex-row items-center justify-between px-5 py-3 border-b border-border">
+        <View className="px-5 pt-3 pb-3 border-b border-border dark:border-border-dark flex-row items-center justify-between bg-surface dark:bg-surface-dark">
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.back()}
-            className="p-2 -ml-2"
+            className="w-10 h-10 rounded-full bg-background dark:bg-background-dark border border-border dark:border-border-dark items-center justify-center mr-3"
           >
-            <Feather name="arrow-left" size={24} color="#111827" />
+            <Feather name="arrow-left" size={20} color="#DC2626" />
           </TouchableOpacity>
-          <Text className="font-inter-bold text-h3 text-text-primary">
-            Edit Blood Request
-          </Text>
-          <View className="w-8" />
+          <View className="flex-1">
+            <Text className="font-inter-bold text-h2 text-text-primary dark:text-text-dark-primary">
+              Edit Blood Request
+            </Text>
+            <Text className="font-inter text-caption text-text-secondary dark:text-text-dark-secondary">
+              Update request details and schedule
+            </Text>
+          </View>
         </View>
 
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 16,
-            paddingBottom: 140,
+            paddingBottom: 60,
           }}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Error Banner */}
-          <ErrorBanner
-            message={formError}
-            onDismiss={() => setFormError(null)}
-          />
+          {formError ? (
+            <ErrorBanner
+              message={formError}
+              onDismiss={() => setFormError(null)}
+              className="mb-5"
+            />
+          ) : null}
 
-          {/* Section 1: Patient & Hospital */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          {/* Section 1: Patient & Medical Info */}
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="user" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Patient & Hospital Details
               </Text>
             </View>
@@ -242,7 +274,7 @@ export default function EditRequestScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <AppInput
                   label="Patient Name *"
-                  placeholder="e.g. Rahima Begum"
+                  placeholder="e.g. Mohammad Rahman"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -264,7 +296,7 @@ export default function EditRequestScreen() {
                   onBlur={onBlur}
                   error={errors.hospitalName?.message}
                   leftIcon={
-                    <Feather name="activity" size={18} color="#9CA3AF" />
+                    <Feather name="plus-square" size={18} color="#9CA3AF" />
                   }
                 />
               )}
@@ -272,12 +304,12 @@ export default function EditRequestScreen() {
           </View>
 
           {/* Section 2: Blood Group & Urgency */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
-                <Feather name="droplet" size={16} color="#DC2626" />
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
+                <Feather name="activity" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Blood Group & Urgency
               </Text>
             </View>
@@ -285,7 +317,7 @@ export default function EditRequestScreen() {
             <BloodGroupSelector
               label="Required Blood Group *"
               selectedGroup={selectedBloodGroup}
-              onSelect={(group) => setValue("bloodGroup", group)}
+              onSelect={(bg) => setValue("bloodGroup", bg)}
               error={errors.bloodGroup?.message}
             />
 
@@ -296,13 +328,13 @@ export default function EditRequestScreen() {
             />
           </View>
 
-          {/* Section 3: Location & Needed Date */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          {/* Section 3: Location & Needed Date/Time */}
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="map-pin" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Location & Schedule
               </Text>
             </View>
@@ -323,28 +355,29 @@ export default function EditRequestScreen() {
               }}
             />
 
-            <Controller
-              control={control}
-              name="neededDate"
-              render={({ field: { onChange, value } }) => (
-                <AppDatePicker
-                  label="Needed By Date *"
-                  value={value}
-                  onChange={onChange}
-                  minDate={new Date()}
-                  error={errors.neededDate?.message}
-                />
-              )}
+            <AppDateTimePicker
+              label="Needed By Date & Time *"
+              dateValue={selectedNeededDate}
+              timeValue={selectedNeededTime}
+              onDateChange={(d) =>
+                setValue("neededDate", d, { shouldValidate: true })
+              }
+              onTimeChange={(t) =>
+                setValue("neededTime", t, { shouldValidate: true })
+              }
+              dateError={errors.neededDate?.message}
+              timeError={errors.neededTime?.message}
+              minDate={new Date()}
             />
           </View>
 
           {/* Section 4: Contact & Medical Document */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-6 gap-4">
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-6 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="phone" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Contact & Verification
               </Text>
             </View>
@@ -374,9 +407,9 @@ export default function EditRequestScreen() {
             />
           </View>
 
-          {/* Save Action */}
+          {/* Submit Action */}
           <AppButton
-            title="Save Changes"
+            title="Save Request Changes"
             onPress={handleSubmit(onSubmit)}
             loading={isSubmitting}
             className="mb-4"

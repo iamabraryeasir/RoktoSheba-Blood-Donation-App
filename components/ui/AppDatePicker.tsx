@@ -12,6 +12,7 @@ export interface AppDatePickerProps {
   minYear?: number;
   maxDate?: Date;
   minDate?: Date;
+  className?: string;
 }
 
 const MONTHS = [
@@ -38,6 +39,7 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
   minYear,
   maxDate,
   minDate,
+  className = "",
 }) => {
   const effectiveMaxYear = maxDate
     ? maxDate.getFullYear()
@@ -132,9 +134,9 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
   }, [value]);
 
   return (
-    <View className="w-full">
+    <View className={`w-full ${className}`}>
       {label ? (
-        <Text className="font-inter-medium text-caption text-text-secondary mb-1">
+        <Text className="font-inter-medium text-caption text-text-secondary dark:text-text-dark-secondary mb-1">
           {label}
         </Text>
       ) : null}
@@ -142,15 +144,17 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={handleOpen}
-        className={`flex-row items-center justify-between bg-surface border ${
-          error ? "border-critical" : "border-border"
-        } rounded-md px-3.5 h-12 w-full`}
+        className={`flex-row items-center justify-between bg-surface dark:bg-surface-dark border ${
+          error ? "border-critical" : "border-border dark:border-border-dark"
+        } rounded-xl px-3.5 h-12 w-full shadow-sm`}
       >
         <View className="flex-row items-center flex-1">
           <Feather name="calendar" size={18} color="#DC2626" />
           <Text
             className={`font-inter text-body ml-2.5 ${
-              value ? "text-text-primary" : "text-text-tertiary"
+              value
+                ? "text-text-primary dark:text-text-dark-primary"
+                : "text-text-tertiary dark:text-text-dark-tertiary"
             }`}
           >
             {formattedDisplay}
@@ -176,27 +180,30 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
           className="flex-1 justify-end"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         >
-          <View className="bg-surface rounded-t-3xl p-5 pb-8 max-h-[85%]">
+          <View className="bg-surface dark:bg-surface-dark rounded-t-3xl p-5 pb-8 max-h-[85%] border-t border-border dark:border-border-dark">
             {/* Modal Header */}
-            <View className="flex-row justify-between items-center mb-3 pb-3 border-b border-border">
-              <Text className="font-inter-bold text-h3 text-text-primary">
-                {label || "Select Date"}
-              </Text>
+            <View className="flex-row justify-between items-center mb-3 pb-3 border-b border-border dark:border-border-dark">
+              <View className="flex-row items-center">
+                <Feather name="calendar" size={18} color="#DC2626" />
+                <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary ml-2">
+                  {label || "Select Date"}
+                </Text>
+              </View>
               <TouchableOpacity
                 onPress={() => setShowModal(false)}
                 className="p-1"
               >
-                <Feather name="x" size={22} color="#6B7280" />
+                <Feather name="x" size={22} color="#9CA3AF" />
               </TouchableOpacity>
             </View>
 
             {/* Selected Preview Box */}
-            <View className="bg-primary-surface border border-primary rounded-2xl p-4 mb-4 items-center flex-row justify-between">
+            <View className="bg-primary-surface dark:bg-primary-dark/20 border border-primary rounded-2xl p-4 mb-4 items-center flex-row justify-between">
               <View>
-                <Text className="font-inter-semibold text-caption text-primary uppercase tracking-wider">
+                <Text className="font-inter-semibold text-[11px] text-primary uppercase tracking-wider">
                   Selected Date
                 </Text>
-                <Text className="font-inter-bold text-h2 text-text-primary mt-0.5">
+                <Text className="font-inter-bold text-h2 text-text-primary dark:text-text-dark-primary mt-0.5">
                   {tempDay} {MONTHS[tempMonth - 1]} {tempYear}
                 </Text>
               </View>
@@ -208,7 +215,7 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
             </View>
 
             {/* Segment Tabs: Year | Month | Day */}
-            <View className="flex-row bg-background border border-border rounded-xl p-1 mb-4">
+            <View className="flex-row bg-background dark:bg-background-dark border border-border dark:border-border-dark rounded-xl p-1 mb-4">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setActiveTab("year")}
@@ -218,7 +225,9 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
               >
                 <Text
                   className={`font-inter-semibold text-caption ${
-                    activeTab === "year" ? "text-white" : "text-text-secondary"
+                    activeTab === "year"
+                      ? "text-white"
+                      : "text-text-secondary dark:text-text-dark-secondary"
                   }`}
                 >
                   Year ({tempYear})
@@ -234,7 +243,9 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
               >
                 <Text
                   className={`font-inter-semibold text-caption ${
-                    activeTab === "month" ? "text-white" : "text-text-secondary"
+                    activeTab === "month"
+                      ? "text-white"
+                      : "text-text-secondary dark:text-text-dark-secondary"
                   }`}
                 >
                   Month ({MONTHS[tempMonth - 1]})
@@ -250,7 +261,9 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
               >
                 <Text
                   className={`font-inter-semibold text-caption ${
-                    activeTab === "day" ? "text-white" : "text-text-secondary"
+                    activeTab === "day"
+                      ? "text-white"
+                      : "text-text-secondary dark:text-text-dark-secondary"
                   }`}
                 >
                   Day ({tempDay})
@@ -281,12 +294,14 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
                       className={`w-[23%] py-2.5 rounded-xl border items-center justify-center ${
                         tempYear === y
                           ? "bg-primary border-primary"
-                          : "bg-background border-border"
+                          : "bg-background dark:bg-background-dark border-border dark:border-border-dark"
                       }`}
                     >
                       <Text
                         className={`font-inter-semibold text-body-small ${
-                          tempYear === y ? "text-white" : "text-text-primary"
+                          tempYear === y
+                            ? "text-white"
+                            : "text-text-primary dark:text-text-dark-primary"
                         }`}
                       >
                         {y}
@@ -319,12 +334,14 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
                       className={`w-[30%] py-3 rounded-xl border items-center justify-center ${
                         isSelected
                           ? "bg-primary border-primary"
-                          : "bg-background border-border"
+                          : "bg-background dark:bg-background-dark border-border dark:border-border-dark"
                       }`}
                     >
                       <Text
                         className={`font-inter-bold text-body ${
-                          isSelected ? "text-white" : "text-text-primary"
+                          isSelected
+                            ? "text-white"
+                            : "text-text-primary dark:text-text-dark-primary"
                         }`}
                       >
                         {mName}
@@ -357,12 +374,14 @@ export const AppDatePicker: React.FC<AppDatePickerProps> = ({
                       className={`w-[18%] py-2.5 rounded-xl border items-center justify-center ${
                         tempDay === d
                           ? "bg-primary border-primary"
-                          : "bg-background border-border"
+                          : "bg-background dark:bg-background-dark border-border dark:border-border-dark"
                       }`}
                     >
                       <Text
                         className={`font-inter-semibold text-body-small ${
-                          tempDay === d ? "text-white" : "text-text-primary"
+                          tempDay === d
+                            ? "text-white"
+                            : "text-text-primary dark:text-text-dark-primary"
                         }`}
                       >
                         {d}

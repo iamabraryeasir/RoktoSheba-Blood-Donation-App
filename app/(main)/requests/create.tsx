@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ErrorBanner } from "@/components/feedback/ErrorBanner";
 import { AppButton } from "@/components/ui/AppButton";
-import { AppDatePicker } from "@/components/ui/AppDatePicker";
+import { AppDateTimePicker } from "@/components/ui/AppDateTimePicker";
 import { AppInput } from "@/components/ui/AppInput";
 import { BloodGroupSelector } from "@/components/ui/BloodGroupSelector";
 import { LocationSelector } from "@/components/ui/LocationSelector";
@@ -58,6 +58,7 @@ export default function CreateRequestScreen() {
       district: profile?.district || "Dhaka",
       area: profile?.area || "Dhanmondi",
       neededDate: defaultDate,
+      neededTime: "12:00",
       urgency: "urgent",
       contactNumber: profile?.phone || "+8801",
       documentImageUri: null,
@@ -70,6 +71,8 @@ export default function CreateRequestScreen() {
   const selectedDistrict = watch("district");
   const selectedArea = watch("area");
   const selectedDocumentUri = watch("documentImageUri");
+  const selectedNeededDate = watch("neededDate");
+  const selectedNeededTime = watch("neededTime");
 
   const onSubmit = async (data: CreateRequestFormData) => {
     if (!user?.id) {
@@ -92,11 +95,24 @@ export default function CreateRequestScreen() {
           );
         } catch (uploadErr: any) {
           console.warn("Prescription image upload failed:", uploadErr);
-          // Non-blocking: proceed with request creation even if optional photo fails
         }
       }
 
-      // 2. Create Blood Request in Supabase
+      // 2. Compute exact Needed Date & Time ISO
+      let neededDateTimeIso: string;
+      try {
+        const [hh, mm] = (data.neededTime || "12:00").split(":");
+        const combined = new Date(
+          `${data.neededDate}T${hh.padStart(2, "0")}:${mm.padStart(2, "0")}:00`,
+        );
+        neededDateTimeIso = isNaN(combined.getTime())
+          ? new Date(data.neededDate).toISOString()
+          : combined.toISOString();
+      } catch {
+        neededDateTimeIso = new Date(data.neededDate).toISOString();
+      }
+
+      // 3. Create Blood Request in Supabase
       await requestService.createRequest(user.id, {
         patient_name: data.patientName.trim(),
         blood_group: data.bloodGroup,
@@ -104,13 +120,13 @@ export default function CreateRequestScreen() {
         division: data.division,
         district: data.district,
         area: data.area,
-        needed_date_time: new Date(data.neededDate).toISOString(),
+        needed_date_time: neededDateTimeIso,
         urgency: data.urgency,
         contact_number: data.contactNumber.trim(),
         document_image_url: documentUrl,
       });
 
-      // 3. Invalidate TanStack Query requests cache
+      // 4. Invalidate TanStack Query requests cache
       queryClient.invalidateQueries({ queryKey: requestKeys.all });
 
       showAppAlert(
@@ -130,64 +146,54 @@ export default function CreateRequestScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
       >
         {/* Top Header */}
-        <View className="flex-row items-center justify-between px-5 py-3 border-b border-border">
+        <View className="px-5 pt-3 pb-3 border-b border-border dark:border-border-dark flex-row items-center justify-between bg-surface dark:bg-surface-dark">
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.back()}
-            className="p-2 -ml-2"
+            className="w-10 h-10 rounded-full bg-background dark:bg-background-dark border border-border dark:border-border-dark items-center justify-center mr-3"
           >
-            <Feather name="arrow-left" size={24} color="#111827" />
+            <Feather name="arrow-left" size={20} color="#DC2626" />
           </TouchableOpacity>
-          <Text className="font-inter-bold text-h3 text-text-primary">
-            Create Blood Request
-          </Text>
-          <View className="w-8" />
+          <View className="flex-1">
+            <Text className="font-inter-bold text-h2 text-text-primary dark:text-text-dark-primary">
+              Post Blood Request
+            </Text>
+            <Text className="font-inter text-caption text-text-secondary dark:text-text-dark-secondary">
+              Reach emergency donors across Bangladesh
+            </Text>
+          </View>
         </View>
 
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 16,
-            paddingBottom: 140,
+            paddingBottom: 60,
           }}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Intro Card */}
-          <View className="bg-primary-surface border border-primary rounded-2xl p-4 mb-5 flex-row items-center">
-            <View className="w-10 h-10 rounded-full bg-primary items-center justify-center mr-3">
-              <Feather name="heart" size={20} color="#FFFFFF" />
-            </View>
-            <View className="flex-1">
-              <Text className="font-inter-bold text-body-medium text-primary">
-                Post an Emergency Request
-              </Text>
-              <Text className="font-inter text-caption text-text-secondary mt-0.5">
-                Reach eligible donors in your district within minutes.
-              </Text>
-            </View>
-          </View>
+          {formError ? (
+            <ErrorBanner
+              message={formError}
+              onDismiss={() => setFormError(null)}
+              className="mb-5"
+            />
+          ) : null}
 
-          {/* Error Banner */}
-          <ErrorBanner
-            message={formError}
-            onDismiss={() => setFormError(null)}
-          />
-
-          {/* Section 1: Patient & Hospital */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          {/* Section 1: Patient & Medical Info */}
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="user" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Patient & Hospital Details
               </Text>
             </View>
@@ -198,7 +204,7 @@ export default function CreateRequestScreen() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <AppInput
                   label="Patient Name *"
-                  placeholder="e.g. Rahima Begum"
+                  placeholder="e.g. Mohammad Rahman"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -220,7 +226,7 @@ export default function CreateRequestScreen() {
                   onBlur={onBlur}
                   error={errors.hospitalName?.message}
                   leftIcon={
-                    <Feather name="activity" size={18} color="#9CA3AF" />
+                    <Feather name="plus-square" size={18} color="#9CA3AF" />
                   }
                 />
               )}
@@ -228,12 +234,12 @@ export default function CreateRequestScreen() {
           </View>
 
           {/* Section 2: Blood Group & Urgency */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
-                <Feather name="droplet" size={16} color="#DC2626" />
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
+                <Feather name="activity" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Blood Group & Urgency
               </Text>
             </View>
@@ -241,7 +247,7 @@ export default function CreateRequestScreen() {
             <BloodGroupSelector
               label="Required Blood Group *"
               selectedGroup={selectedBloodGroup}
-              onSelect={(group) => setValue("bloodGroup", group)}
+              onSelect={(bg) => setValue("bloodGroup", bg)}
               error={errors.bloodGroup?.message}
             />
 
@@ -252,13 +258,13 @@ export default function CreateRequestScreen() {
             />
           </View>
 
-          {/* Section 3: Location & Needed Date */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-5 gap-4">
+          {/* Section 3: Location & Needed Date/Time */}
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-5 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="map-pin" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Location & Schedule
               </Text>
             </View>
@@ -279,28 +285,29 @@ export default function CreateRequestScreen() {
               }}
             />
 
-            <Controller
-              control={control}
-              name="neededDate"
-              render={({ field: { onChange, value } }) => (
-                <AppDatePicker
-                  label="Needed By Date *"
-                  value={value}
-                  onChange={onChange}
-                  minDate={new Date()}
-                  error={errors.neededDate?.message}
-                />
-              )}
+            <AppDateTimePicker
+              label="Needed By Date & Time *"
+              dateValue={selectedNeededDate}
+              timeValue={selectedNeededTime}
+              onDateChange={(d) =>
+                setValue("neededDate", d, { shouldValidate: true })
+              }
+              onTimeChange={(t) =>
+                setValue("neededTime", t, { shouldValidate: true })
+              }
+              dateError={errors.neededDate?.message}
+              timeError={errors.neededTime?.message}
+              minDate={new Date()}
             />
           </View>
 
           {/* Section 4: Contact & Medical Document */}
-          <View className="bg-surface border border-border rounded-2xl p-4 mb-6 gap-4">
+          <View className="bg-surface dark:bg-surface-dark border border-border dark:border-border-dark rounded-2xl p-4 mb-6 gap-4">
             <View className="flex-row items-center">
-              <View className="w-8 h-8 rounded-full bg-primary-surface items-center justify-center mr-2.5">
+              <View className="w-8 h-8 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-2.5">
                 <Feather name="phone" size={16} color="#DC2626" />
               </View>
-              <Text className="font-inter-bold text-h3 text-text-primary">
+              <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary">
                 Contact & Verification
               </Text>
             </View>

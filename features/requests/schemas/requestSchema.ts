@@ -29,6 +29,7 @@ export const createRequestSchema = z.object({
   district: z.string().min(1, "District is required"),
   area: z.string().min(1, "Area / Upazila is required"),
   neededDate: z.string().min(1, "Needed date is required"),
+  neededTime: z.string().min(1, "Please select a valid time"),
   urgency: urgencyEnum,
   contactNumber: z
     .string()
