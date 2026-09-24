@@ -80,6 +80,13 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(main)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="hospitals"
+          options={{
+            headerShown: false,
+            animation: "slide_from_right",
+          }}
+        />
         <Stack.Screen name="admin" options={{ headerShown: false }} />
       </Stack>
       <AppDialog />

@@ -7,6 +7,7 @@ export { AppTimePicker } from "./AppTimePicker";
 export { BloodGroupBadge } from "./BloodGroupBadge";
 export { ALL_BLOOD_GROUPS, BloodGroupSelector } from "./BloodGroupSelector";
 export { DocumentUploadPicker } from "./DocumentUploadPicker";
+export { HospitalSearchInput } from "./HospitalSearchInput";
 export { LocationDetector } from "./LocationDetector";
 export { LocationSelector } from "./LocationSelector";
 export { OtpInput } from "./OtpInput";

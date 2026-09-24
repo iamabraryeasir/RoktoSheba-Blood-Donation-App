@@ -313,6 +313,38 @@ export default function HomeScreen() {
           )}
         </View>
 
+        {/* Hospital & Blood Bank Search Direct CTA (External REST API) */}
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => router.push("/hospitals" as any)}
+          className="bg-primary-surface dark:bg-primary-dark/20 border border-primary/30 rounded-3xl p-4 mb-6 flex-row items-center justify-between shadow-sm"
+        >
+          <View className="flex-row items-center flex-1 mr-3">
+            <View className="w-12 h-12 rounded-2xl bg-primary items-center justify-center mr-3.5 shadow-sm">
+              <Feather name="activity" size={22} color="#FFFFFF" />
+            </View>
+            <View className="flex-1">
+              <View className="flex-row items-center">
+                <Text className="font-inter-bold text-sm text-text-primary dark:text-text-dark-primary mr-2">
+                  Hospitals & Blood Banks
+                </Text>
+                <View className="bg-primary-light dark:bg-primary-dark/30 px-1.5 py-0.5 rounded border border-primary/20">
+                  <Text className="text-[9px] font-inter-bold text-primary dark:text-primary-light">
+                    Live API
+                  </Text>
+                </View>
+              </View>
+              <Text
+                className="font-inter text-caption text-text-secondary dark:text-text-dark-secondary mt-0.5"
+                numberOfLines={1}
+              >
+                Search Bangladesh medical facilities & blood labs
+              </Text>
+            </View>
+          </View>
+          <Feather name="chevron-right" size={20} color="#DC2626" />
+        </TouchableOpacity>
+
         {/* 4. 24/7 Emergency Blood Bank Hotlines (Bangladesh) */}
         <View className="mb-6">
           <Text className="font-inter-bold text-h3 text-text-primary dark:text-text-dark-primary mb-3">

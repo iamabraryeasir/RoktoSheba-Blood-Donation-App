@@ -215,20 +215,20 @@ export function LocationDetector({
           onPress={handlePressDetect}
           disabled={isDetecting}
           activeOpacity={0.8}
-          className="flex-row items-center justify-between bg-primary-50 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-900/50 rounded-xl px-4 py-3"
+          className="flex-row items-center justify-between bg-primary-surface dark:bg-primary-dark/20 border border-primary/30 rounded-xl px-4 py-3"
         >
           <View className="flex-row items-center flex-1 mr-2">
-            <View className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 items-center justify-center mr-3">
+            <View className="w-8 h-8 rounded-full bg-primary-light dark:bg-primary-dark/30 items-center justify-center mr-3">
               <Feather name="crosshair" size={16} color="#DC2626" />
             </View>
             <View className="flex-1">
-              <Text className="text-xs font-bold text-primary-900 dark:text-primary-200">
+              <Text className="text-xs font-inter-bold text-text-primary dark:text-text-dark-primary">
                 {isDetecting
                   ? "Detecting current GPS location..."
                   : "Auto-detect Location via GPS"}
               </Text>
               <Text
-                className="text-[10px] text-primary-700 dark:text-primary-300 mt-0.5"
+                className="text-[10px] text-primary dark:text-primary-light font-inter-medium mt-0.5"
                 numberOfLines={1}
               >
                 {lastDetected

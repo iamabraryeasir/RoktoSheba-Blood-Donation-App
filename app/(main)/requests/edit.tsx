@@ -19,6 +19,7 @@ import { AppButton } from "@/components/ui/AppButton";
 import { AppDateTimePicker } from "@/components/ui/AppDateTimePicker";
 import { AppInput } from "@/components/ui/AppInput";
 import { BloodGroupSelector } from "@/components/ui/BloodGroupSelector";
+import { HospitalSearchInput } from "@/components/ui/HospitalSearchInput";
 import { LocationDetector } from "@/components/ui/LocationDetector";
 import { LocationSelector } from "@/components/ui/LocationSelector";
 
@@ -293,20 +294,30 @@ export default function EditRequestScreen() {
               )}
             />
 
+            {/* Smart Hospital Search via OpenStreetMap REST API */}
             <Controller
               control={control}
               name="hospitalName"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
+              render={({ field: { onChange, value } }) => (
+                <HospitalSearchInput
                   label="Hospital / Clinic Name *"
-                  placeholder="e.g. Dhaka Medical College Hospital"
+                  placeholder="Search e.g. Dhaka Medical, Square, Apollo..."
                   value={value}
                   onChangeText={onChange}
-                  onBlur={onBlur}
                   error={errors.hospitalName?.message}
-                  leftIcon={
-                    <Feather name="plus-square" size={18} color="#9CA3AF" />
-                  }
+                  filterDivision={selectedDivision}
+                  onHospitalSelected={(hospital) => {
+                    setValue("hospitalName", hospital.name, {
+                      shouldValidate: true,
+                    });
+                    setValue("division", hospital.division);
+                    setValue("district", hospital.district);
+                    setValue("area", hospital.area);
+                    setCoords({
+                      latitude: hospital.latitude,
+                      longitude: hospital.longitude,
+                    });
+                  }}
                 />
               )}
             />

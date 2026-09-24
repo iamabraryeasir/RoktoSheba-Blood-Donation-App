@@ -203,7 +203,7 @@ export function DocumentUploadPicker({
               className="mt-1"
               activeOpacity={0.7}
             >
-              <Text className="text-[11px] font-semibold text-primary-600 dark:text-primary-400">
+              <Text className="text-[11px] font-inter-semibold text-primary dark:text-primary-light">
                 Change photo
               </Text>
             </TouchableOpacity>
@@ -213,7 +213,7 @@ export function DocumentUploadPicker({
           <TouchableOpacity
             onPress={handleRemove}
             activeOpacity={0.7}
-            className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-950/60 items-center justify-center"
+            className="w-8 h-8 rounded-full bg-critical-surface dark:bg-critical/20 items-center justify-center border border-critical/30"
           >
             <Feather name="x" size={16} color="#DC2626" />
           </TouchableOpacity>
@@ -222,21 +222,21 @@ export function DocumentUploadPicker({
         <TouchableOpacity
           onPress={handleOpenSourcePicker}
           activeOpacity={0.8}
-          className="border-2 border-dashed border-gray-300 dark:border-border-dark rounded-2xl p-4 items-center justify-center bg-gray-50/50 dark:bg-surface-dark/40"
+          className="border-2 border-dashed border-border dark:border-border-dark rounded-2xl p-4 items-center justify-center bg-surface dark:bg-surface-dark/50"
         >
-          <View className="w-12 h-12 rounded-full bg-primary-50 dark:bg-primary-950/40 items-center justify-center mb-2">
+          <View className="w-12 h-12 rounded-full bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mb-2">
             <Feather name="upload-cloud" size={22} color="#DC2626" />
           </View>
-          <Text className="text-xs font-bold text-gray-800 dark:text-text-dark-primary">
+          <Text className="text-xs font-inter-bold text-text-primary dark:text-text-dark-primary">
             Upload Prescription / Requisition Slip
           </Text>
-          <Text className="text-[11px] text-gray-400 dark:text-text-dark-muted mt-0.5">
+          <Text className="text-[11px] text-text-tertiary mt-0.5">
             Take photo with Camera or pick from Gallery
           </Text>
         </TouchableOpacity>
       )}
 
-      {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
+      {error && <Text className="text-xs text-critical mt-1">{error}</Text>}
 
       {/* Source Choice Modal (Camera vs Gallery) */}
       <Modal
@@ -248,11 +248,11 @@ export function DocumentUploadPicker({
         <TouchableWithoutFeedback onPress={() => setShowSourceModal(false)}>
           <View className="flex-1 bg-black/60 items-center justify-end p-4">
             <TouchableWithoutFeedback>
-              <View className="w-full max-w-sm bg-white dark:bg-surface-dark rounded-3xl p-5 shadow-2xl border border-border-light dark:border-border-dark">
-                <Text className="text-base font-bold text-gray-900 dark:text-text-dark-primary text-center mb-1">
+              <View className="w-full max-w-sm bg-surface-elevated dark:bg-surface-dark rounded-3xl p-5 shadow-2xl border border-border dark:border-border-dark">
+                <Text className="text-base font-inter-bold text-text-primary dark:text-text-dark-primary text-center mb-1">
                   Select Photo Source
                 </Text>
-                <Text className="text-xs text-gray-500 dark:text-text-dark-secondary text-center mb-4">
+                <Text className="text-xs text-text-secondary dark:text-text-dark-secondary text-center mb-4">
                   Choose how you want to provide your document photo
                 </Text>
 
@@ -260,16 +260,16 @@ export function DocumentUploadPicker({
                 <TouchableOpacity
                   onPress={handleLaunchCamera}
                   activeOpacity={0.8}
-                  className="flex-row items-center p-3.5 rounded-xl bg-gray-50 dark:bg-background-dark/50 border border-gray-100 dark:border-border-dark mb-2.5"
+                  className="flex-row items-center p-3.5 rounded-xl bg-surface dark:bg-background-dark/50 border border-border dark:border-border-dark mb-2.5"
                 >
-                  <View className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-950/60 items-center justify-center mr-3">
+                  <View className="w-10 h-10 rounded-xl bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mr-3">
                     <Feather name="camera" size={20} color="#DC2626" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-sm font-bold text-gray-900 dark:text-text-dark-primary">
+                    <Text className="text-sm font-inter-bold text-text-primary dark:text-text-dark-primary">
                       Take Photo
                     </Text>
-                    <Text className="text-[11px] text-gray-500 dark:text-text-dark-secondary">
+                    <Text className="text-[11px] text-text-secondary dark:text-text-dark-secondary">
                       Use device camera to snap picture now
                     </Text>
                   </View>
@@ -280,16 +280,16 @@ export function DocumentUploadPicker({
                 <TouchableOpacity
                   onPress={handleLaunchGallery}
                   activeOpacity={0.8}
-                  className="flex-row items-center p-3.5 rounded-xl bg-gray-50 dark:bg-background-dark/50 border border-gray-100 dark:border-border-dark mb-4"
+                  className="flex-row items-center p-3.5 rounded-xl bg-surface dark:bg-background-dark/50 border border-border dark:border-border-dark mb-4"
                 >
-                  <View className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 items-center justify-center mr-3">
+                  <View className="w-10 h-10 rounded-xl bg-info-surface dark:bg-info/20 items-center justify-center mr-3">
                     <Feather name="image" size={20} color="#2563EB" />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-sm font-bold text-gray-900 dark:text-text-dark-primary">
+                    <Text className="text-sm font-inter-bold text-text-primary dark:text-text-dark-primary">
                       Choose from Gallery
                     </Text>
-                    <Text className="text-[11px] text-gray-500 dark:text-text-dark-secondary">
+                    <Text className="text-[11px] text-text-secondary dark:text-text-dark-secondary">
                       Select existing photo from storage
                     </Text>
                   </View>

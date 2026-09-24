@@ -67,7 +67,7 @@ export function PermissionRationaleModal({
             <View className="w-full max-w-sm bg-white dark:bg-surface-dark rounded-3xl p-6 shadow-2xl border border-border-light dark:border-border-dark">
               {/* Header Icon */}
               <View className="items-center mb-4">
-                <View className="w-16 h-16 rounded-2xl bg-primary-50 dark:bg-primary-950/40 items-center justify-center mb-3">
+                <View className="w-16 h-16 rounded-2xl bg-primary-surface dark:bg-primary-dark/20 items-center justify-center mb-3">
                   <Feather
                     name={config.icon as any}
                     size={32}
@@ -83,7 +83,7 @@ export function PermissionRationaleModal({
               </View>
 
               {/* Description */}
-              <View className="bg-gray-50 dark:bg-background-dark/50 rounded-2xl p-4 mb-4 border border-gray-100 dark:border-border-dark/60">
+              <View className="bg-gray-50 dark:bg-background-dark/50 rounded-2xl p-4 mb-4 border border-border dark:border-border-dark/60">
                 <Text className="text-xs text-gray-600 dark:text-text-dark-secondary leading-relaxed">
                   {isBlocked
                     ? `You previously denied ${type} access with "Don't ask again". To use this feature, please enable it in your device settings.`
@@ -113,7 +113,7 @@ export function PermissionRationaleModal({
                 <TouchableOpacity
                   onPress={handleAction}
                   activeOpacity={0.85}
-                  className="w-full bg-primary-600 py-3.5 rounded-xl items-center justify-center flex-row shadow-sm"
+                  className="w-full bg-primary py-3.5 rounded-xl items-center justify-center flex-row shadow-sm active:bg-primary-hover"
                 >
                   <Feather
                     name={isBlocked ? "settings" : "check"}
