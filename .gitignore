@@ -42,5 +42,6 @@ app-example
 /ios
 /android
 
-FEATURE_TABLE.md
 PROJECT_PLAN.md
+FEATURE_TABLE.md
+.env
