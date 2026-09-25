@@ -27,9 +27,7 @@
 
 | Target Platform             | Package Format      | Download Link / Status                                                                     | Distribution Profile  |
 | :-------------------------- | :------------------ | :----------------------------------------------------------------------------------------- | :-------------------- |
-| **Android (Universal ARM)** | `.apk` (Standalone) | **[📥 Download Standalone Android APK (v1.0.0)](PASTE_STANDALONE_APK_DOWNLOAD_LINK_HERE)** | `preview` (EAS Build) |
-| **Google Play Store**       | `.aab` (App Bundle) | _Pending Play Store Review_                                                                | `production-aab`      |
-| **Web Preview / PWA**       | Web Application     | **[🌐 Launch Web Experience](PASTE_WEB_DEMO_URL_HERE)**                                    | Static Metro Export   |
+| **Android (Universal ARM)** | `.apk` (Standalone) | **[📥 Download Standalone Android APK (v1.0.0)](https://expo.dev/artifacts/eas/6SI2v3opQ3LcFzIIte3nhA0rf1kbS56IlTEKrooWtiU.apk)** | `preview` (EAS Build) |
 
 > [!TIP]
 > **APK Installation Note:** When installing the standalone APK on Android for the first time, allow _"Install from unknown sources"_ in your browser or file manager settings. The APK is optimized for `arm64-v8a` and `armeabi-v7a` architectures (~35 MB).
