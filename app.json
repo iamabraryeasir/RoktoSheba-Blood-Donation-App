@@ -23,7 +23,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "RoktoSheba needs access to your camera to take donor avatars and medical prescription photos.",
         "NSPhotoLibraryUsageDescription": "RoktoSheba needs access to your photo library to select profile avatars and medical prescriptions.",
-        "NSLocationWhenInUseUsageDescription": "RoktoSheba needs your location to match nearby emergency blood donors and patients."
+        "NSLocationWhenInUseUsageDescription": "RoktoSheba needs your location to match nearby emergency blood donors and patients.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
