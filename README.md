@@ -25,8 +25,8 @@
 
 ### 📥 Direct Application Download
 
-| Target Platform             | Package Format      | Download Link / Status                                                                     | Distribution Profile  |
-| :-------------------------- | :------------------ | :----------------------------------------------------------------------------------------- | :-------------------- |
+| Target Platform             | Package Format      | Download Link / Status                                                                                                            | Distribution Profile  |
+| :-------------------------- | :------------------ | :-------------------------------------------------------------------------------------------------------------------------------- | :-------------------- |
 | **Android (Universal ARM)** | `.apk` (Standalone) | **[📥 Download Standalone Android APK (v1.0.0)](https://expo.dev/artifacts/eas/6SI2v3opQ3LcFzIIte3nhA0rf1kbS56IlTEKrooWtiU.apk)** | `preview` (EAS Build) |
 
 > [!TIP]
@@ -34,19 +34,78 @@
 
 ---
 
-## 📸 Application Preview & User Experience
+## 📸 Application Preview & User Interface Gallery
 
 <div align="center">
 
-|   1. Authentication & OTP   | 2. Onboarding & Division Picker  |    3. Live Request Feed     |       4. Donor Discovery        |
-| :-------------------------: | :------------------------------: | :-------------------------: | :-----------------------------: |
-| _8-Digit Secure In-App OTP_ | _Age-Constrained + 64 Districts_ | _Urgency Indicators & Feed_ | _Real-Time Filter Bottom Sheet_ |
-|    `[Screenshot: Auth]`     |    `[Screenshot: Onboarding]`    |    `[Screenshot: Feed]`     |     `[Screenshot: Donors]`      |
+### 1. Authentication & Security Pipeline
 
-|        5. Create Request         |    6. Donor Public Profile     |  7. Hospital Directory (API)  |   8. Admin Moderation    |
-| :------------------------------: | :----------------------------: | :---------------------------: | :----------------------: |
-| _Prescription Proof + Nominatim_ | _Eligibility Cooldown & Stats_ | _OpenStreetMap Live Facility_ | _User Banning & Reports_ |
-|  `[Screenshot: Create Request]`  | `[Screenshot: Donor Profile]`  |   `[Screenshot: Hospitals]`   |  `[Screenshot: Admin]`   |
+_Secure in-app 8-digit numeric OTP verification with automatic unverified account recovery._
+
+|                                 **User Login**                                 |                                    **Registration**                                     |                                   **8-Digit In-App OTP**                                   |                                  **Password Recovery**                                   |
+| :----------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+| <img src="./screenshots/user-login.png" width="220" alt="User Login Screen" /> | <img src="./screenshots/user-registration.png" width="220" alt="Registration Screen" /> | <img src="./screenshots/otp-verification.png" width="220" alt="OTP Verification Screen" /> | <img src="./screenshots/forgot-password.png" width="220" alt="Forgot Password Screen" /> |
+|                       _Email & password authentication_                        |                           _Live password strength indicator_                            |                                 _Native 8-box numeric OTP_                                 |                                 _Recovery code dispatch_                                 |
+
+<br/>
+
+### 2. Guided Onboarding & Donor Eligibility Setup
+
+_Custom age-constrained calendar picker enforcing legal donor criteria ($\ge 16$ years) & full 64-district Bangladesh hierarchy._
+
+|                           **Profile Onboarding Wizard**                            |                             **Age-Constrained Native Date Picker**                             |
+| :--------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| <img src="./screenshots/onboard.png" width="240" alt="Guided Onboarding Screen" /> | <img src="./screenshots/custom-date-picker.png" width="240" alt="Custom Date Picker Screen" /> |
+|                      _Division, District & Blood Group setup_                      |                           _Interactive $\ge 16$ years age validator_                           |
+
+<br/>
+
+### 3. Home Feed & Blood Request Coordination
+
+_Live urgency tags, real-time request discovery, prescription document proof verification, and requester management._
+
+|                                **Home Dashboard**                                 |                               **Blood Requests Feed**                                |                            **Request Details & Coordination**                            |
+| :-------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+| <img src="./screenshots/home-page.png" width="230" alt="Home Dashboard Screen" /> | <img src="./screenshots/requests-feed.png" width="230" alt="Requests Feed Screen" /> | <img src="./screenshots/request-details.png" width="230" alt="Request Details Screen" /> |
+|                    _Greeting, Quick Actions & Urgent Carousel_                    |                         _Search & multi-filter bottom sheet_                         |                        _Urgency pulse tag, proof image & calling_                        |
+
+|                                      **Create Blood Request**                                      |                             **My Requests Manager**                              |
+| :------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
+| <img src="./screenshots/create-blood-request.png" width="240" alt="Create Blood Request Screen" /> | <img src="./screenshots/my-requests.png" width="240" alt="My Requests Screen" /> |
+|                        _Prescription proof upload & Nominatim autocomplete_                        |                  _Track Active, Fulfilled & Cancelled requests_                  |
+
+<br/>
+
+### 4. Voluntary Donor Discovery & Emergency Facilities
+
+_Multi-parameter voluntary donor discovery with medical availability badges and live OpenStreetMap Nominatim facility integration._
+
+|                            **Find Voluntary Donors**                             |                               **Donor Public Profile**                                |                                **Emergency Hospital Directory**                                |
+| :------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+| <img src="./screenshots/find-donors.png" width="230" alt="Find Donors Screen" /> | <img src="./screenshots/donors-profile.png" width="230" alt="Donor Profile Screen" /> | <img src="./screenshots/hospital-directory.png" width="230" alt="Hospital Directory Screen" /> |
+|                   _Blood group pills & available-only toggle_                    |                    _Donation history & 90-day cooldown countdown_                     |                        _Real-time Nominatim REST search & direct dial_                         |
+
+<br/>
+
+### 5. User Profile Management & Cooldown Tracking
+
+_Self-service donor availability toggle, 90-day eligibility countdown algorithm, and camera/gallery avatar upload._
+
+|                        **User Profile & Cooldown Tracker**                         |                            **Edit Profile & Avatar Changer**                            |
+| :--------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: |
+| <img src="./screenshots/user-profile.png" width="240" alt="User Profile Screen" /> | <img src="./screenshots/edit-user-profile.png" width="240" alt="Edit Profile Screen" /> |
+|                  _Donor availability switch & eligibility banner_                  |                       _Camera / gallery picker & address updater_                       |
+
+<br/>
+
+### 6. Role-Based Admin Governance & Moderation Portal
+
+_Full administrative control: real-time platform KPIs, user moderation, request force-cancellation, and community report queues._
+
+|                                     **Admin Control Panel**                                      |                                 **User Management & Banning**                                  |                                        **Request Moderation**                                        |                               **Community Reports Queue**                                |
+| :----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+| <img src="./screenshots/admin-control-panel.png" width="220" alt="Admin Control Panel Screen" /> | <img src="./screenshots/admin-user-control.png" width="220" alt="Admin User Control Screen" /> | <img src="./screenshots/admin-request-control.png" width="220" alt="Admin Request Control Screen" /> | <img src="./screenshots/admin-user-report.png" width="220" alt="Admin Reports Screen" /> |
+|                             _Real-time platform metrics & overview_                              |                          _Search users & toggle active/banned status_                          |                               _Review active requests & force cancel_                                |                          _Handle community abuse/fraud reports_                          |
 
 </div>
 
